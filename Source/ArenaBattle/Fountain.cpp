@@ -14,6 +14,7 @@ AFountain::AFountain()
     Water = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WATER"));
     Light = CreateDefaultSubobject<UPointLightComponent>(TEXT("LIGHT"));
     Splash = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SPLASH"));
+    Movement = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("MOVEMENT"));
 
     // 오브젝트의 스태틱 매시 값을 에디터에서 설정하는 것이 아닌  코드 상으로 해당 메시의 경로를 알아와서 적용하는 과정
     // 분수 스태틱 메시 레퍼런스 복사 값 :  StaticMesh'/Game/InfinityBladeGrassLands/Environments/Plains/Env_Plains_Ruins/StaticMesh/SM_Plains_Castle_Fountain_01.SM_Plains_Castle_Fountain_01'
@@ -49,6 +50,10 @@ AFountain::AFountain()
     Water->SetRelativeLocation(FVector(0.0f, 0.0f, 135.0f));
     Light->SetRelativeLocation(FVector(0.0f, 0.0f, 195.0f));
     Splash->SetRelativeLocation(FVector(0.0f, 0.0f, 195.0f));
+
+    // 회전 속도 설정
+    RotateSpeed = 30.0f;
+    Movement->RotationRate = FRotator(0.0f, RotateSpeed, 0.0f);
 }
 
 // Called when the game starts or when spawned
@@ -56,11 +61,25 @@ void AFountain::BeginPlay()
 {
 	Super::BeginPlay();
 	
+    ABLOG(Warning, TEXT("Actor Name : %s, ID : %d, Location X : %.3f"), *GetName(), ID, GetActorLocation().X);
+}
+
+void AFountain::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+    ABLOG_S(Warning);
+}
+
+void AFountain::PostInitializeComponents()
+{
+    Super::PostInitializeComponents();
+    ABLOG_S(Warning);
 }
 
 // Called every frame
 void AFountain::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    AddActorLocalRotation(FRotator(0.0f, RotateSpeed * DeltaTime, 0.0f));
 }
 
