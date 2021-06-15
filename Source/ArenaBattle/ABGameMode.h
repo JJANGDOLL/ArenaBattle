@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ArenaBattle.h"
-#include "GameFramework/GameModeBase.h"
+#include "ABCharacter.h"
 #include "ABGameMode.generated.h"
 
 /**
