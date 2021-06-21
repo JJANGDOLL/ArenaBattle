@@ -42,6 +42,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(VisibleAnywhere, Category=Camera)
     USpringArmComponent* SpringArm;
@@ -63,6 +64,7 @@ private:
 
     void AttackStartComboState();
     void AttackEndComboState();
+    void AttackCheck();
 
 private:
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -82,4 +84,10 @@ private:
 
     UPROPERTY()
     class UABAnimInstance *ABAnim;
+
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+    float AttackRange;
+
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+    float AttackRadius;
 };

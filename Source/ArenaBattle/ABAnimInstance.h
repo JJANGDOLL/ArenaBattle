@@ -28,6 +28,7 @@ public:
 public:
     FOnNextAttackCheckDelegate OnNextAttackCheck;
     FOnAttackHitCheckDelegate OnAttackHitCheck;
+    void SetDeadAnim() {IsDead = true;}
 
 private:
     UFUNCTION()
@@ -37,6 +38,7 @@ private:
     void AnimNotify_NextAttackCheck();
 
     FName GetAttackMontageSectionName(int32 Section);
+
 
 private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Pawn, Meta=(AllowPrivateAccess=true))
@@ -48,5 +50,7 @@ private:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category=Attack, Meta = (AllowPrivateAccess = true))
     UAnimMontage* AttackMontage;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+    bool IsDead;
 
 };
