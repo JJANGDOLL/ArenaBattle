@@ -8,6 +8,8 @@
 #include "Components/WidgetComponent.h"
 #include "ABCharacterWidget.h"
 #include "ABAIController.h"
+#include "ABCharacterSetting.h"
+#include "ABGameInstance.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -85,6 +87,15 @@ AABCharacter::AABCharacter()
 
     AIControllerClass = AABAIController::StaticClass();
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+    //auto DefaultSetting = GetDefault<UABCharacterSetting>();
+    //if (DefaultSetting->CharacterAssets.Num() > 0)
+    //{
+    //    for (auto CharacterAsset : DefaultSetting->CharacterAssets)
+    //    {
+    //    }
+    //}
+
 }
 
 // Called when the game starts or when spawned
@@ -92,12 +103,25 @@ void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-    FName WeaponSocket(TEXT("hand_rSocket"));
-    auto CurWeapon = GetWorld()->SpawnActor<AABWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
-    if (nullptr != CurWeapon)
+    if (!IsPlayerControlled())
     {
-        CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+        auto DefaultSetting = GetDefault<UABCharacterSetting>();
+        int32 RandIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
+        CharacterAssetToLoad = DefaultSetting->CharacterAssets[RandIndex];
+
+        auto ABGameInstance = Cast<UABGameInstance>(GetGameInstance());
+        if (nullptr != ABGameInstance)
+        {
+            AssetStreamingHandle = ABGameInstance->StreambleManager.RequestAsyncLoad(CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AABCharacter::OnAssetLoadCompleted));
+        }
     }
+
+    //FName WeaponSocket(TEXT("hand_rSocket"));
+    //auto CurWeapon = GetWorld()->SpawnActor<AABWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+    //if (nullptr != CurWeapon)
+    //{
+    //    CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+    //}
 }
 
 void AABCharacter::SetControlMode(EControlMode NewControlMode)
@@ -419,6 +443,16 @@ void AABCharacter::AttackCheck()
             HitResult.Actor->TakeDamage(CharacterStat->GetAttack(), DamageEvent, GetController(), this);
             ABLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
         }
+    }
+}
+
+void AABCharacter::OnAssetLoadCompleted()
+{
+    AssetStreamingHandle->ReleaseHandle();
+    TSoftObjectPtr<USkeletalMesh> LoadedAssetPath(CharacterAssetToLoad);
+    if (LoadedAssetPath->IsValidLowLevel())
+    {
+        GetMesh()->SetSkeletalMesh(LoadedAssetPath.Get());
     }
 }
 
