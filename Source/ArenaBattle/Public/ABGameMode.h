@@ -6,6 +6,7 @@
 #include "ABCharacter.h"
 #include "ABGameMode.generated.h"
 
+
 /**
  * 
  */
@@ -17,6 +18,11 @@ class ARENABATTLE_API AABGameMode : public AGameModeBase
 	AABGameMode();
 	
 public:
+    virtual void PostInitializeComponents() override;
     virtual void PostLogin(APlayerController* NewPlayer) override;
-	
+	void AddScore(class AABPlayerController * ScoredPlayer);
+
+private:
+    UPROPERTY()
+    class AABGameState* ABGameState;
 };
