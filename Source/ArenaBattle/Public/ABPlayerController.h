@@ -25,11 +25,22 @@ public:
 
     void AddGameScore() const;
 
+    void ChangeInputMode(bool bGameMode = true);
+
+    void ShowResultUI();
+
 protected:
      virtual void BeginPlay() override;
+     virtual void SetupInputComponent() override;
 
      UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
      TSubclassOf<class UABHUDWidget> HUDWidgetClass;
+
+     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+     TSubclassOf<class UABGameplayWidget> MenuWidgetClass;
+
+     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+     TSubclassOf<class UABGameplayResultWidget> ResultWidgetClass;
 
 private:
     UPROPERTY()
@@ -37,4 +48,15 @@ private:
 
     UPROPERTY()
     class AABPlayerState* ABPlayerState;
+
+    void OnGamePause();
+
+    UPROPERTY()
+    class UABGameplayWidget* MenuWidget;
+
+    UPROPERTY()
+    class UABGameplayResultWidget* ResultWidget;
+
+    FInputModeGameOnly GameInputMode;
+    FInputModeUIOnly UIInputMode;
 };
